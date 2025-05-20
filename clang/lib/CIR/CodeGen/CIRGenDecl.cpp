@@ -486,6 +486,7 @@ CIRGenModule::getOrCreateStaticVarDecl(const VarDecl &D,
       getModule(), getLoc(D.getLocation()), Name, LTy, false, Linkage, AS);
   // TODO(cir): infer visibility from linkage in global op builder.
   GV.setVisibility(getMLIRVisibilityFromCIRLinkage(Linkage));
+  cir::setGlobalVisibility(GV, getCIRVisibilityFromCIRLinkage(Linkage));
   GV.setInitialValueAttr(Init);
   GV.setAlignment(getASTContext().getDeclAlign(&D).getAsAlign().value());
 

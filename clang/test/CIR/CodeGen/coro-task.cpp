@@ -137,10 +137,10 @@ co_invoke_fn co_invoke;
 // CHECK: module {{.*}} {
 // CHECK-NEXT: cir.global external @_ZN5folly4coro9co_invokeE = #cir.zero : !rec_folly3A3Acoro3A3Aco_invoke_fn
 
-// CHECK: cir.func builtin private @__builtin_coro_id(!u32i, !cir.ptr<!void>, !cir.ptr<!void>, !cir.ptr<!void>) -> !u32i
-// CHECK: cir.func builtin private @__builtin_coro_alloc(!u32i) -> !cir.bool
+// CHECK: cir.func builtin private hidden @__builtin_coro_id(!u32i, !cir.ptr<!void>, !cir.ptr<!void>, !cir.ptr<!void>) -> !u32i
+// CHECK: cir.func builtin private hidden @__builtin_coro_alloc(!u32i) -> !cir.bool
 // CHECK: cir.func builtin private @__builtin_coro_size() -> !u64i
-// CHECK: cir.func builtin private @__builtin_coro_begin(!u32i, !cir.ptr<!void>) -> !cir.ptr<!void>
+// CHECK: cir.func builtin private hidden @__builtin_coro_begin(!u32i, !cir.ptr<!void>) -> !cir.ptr<!void>
 
 using VoidTask = folly::coro::Task<void>;
 

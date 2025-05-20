@@ -2100,8 +2100,10 @@ mlir::Attribute CIRGenItaniumRTTIBuilder::BuildTypeInfo(
   assert(!cir::MissingFeatures::setDLLStorageClass());
   assert(!cir::MissingFeatures::setPartition());
   assert(!cir::MissingFeatures::setDSOLocal());
+  // TODO(cir #1029): Remove direct calls to setting MLIR visibility
   mlir::SymbolTable::setSymbolVisibility(
       TypeName, CIRGenModule::getMLIRVisibility(TypeName));
+  cir::setGlobalVisibility(TypeName, CIRGenModule::getCIRVisibility(TypeName));
 
   // TODO(cir): setup other bits for GV
   assert(!cir::MissingFeatures::setDLLStorageClass());

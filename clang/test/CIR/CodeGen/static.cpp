@@ -39,8 +39,8 @@ static Init __ioinit2(false);
 
 
 // AFTER:      module {{.*}} attributes {{.*}}cir.global_ctors = [#cir.global_ctor<"__cxx_global_var_init", 65536>, #cir.global_ctor<"__cxx_global_var_init.1", 65536>]
-// AFTER-NEXT:   cir.global "private" external @__dso_handle : i8
-// AFTER-NEXT:   cir.func private @__cxa_atexit(!cir.ptr<!cir.func<(!cir.ptr<!void>)>>, !cir.ptr<!void>, !cir.ptr<i8>)
+// AFTER-NEXT:   cir.global "private" hidden external @__dso_handle : i8
+// AFTER-NEXT:   cir.func private hidden @__cxa_atexit(!cir.ptr<!cir.func<(!cir.ptr<!void>)>>, !cir.ptr<!void>, !cir.ptr<i8>)
 // AFTER-NEXT:   cir.func private @_ZN4InitC1Eb(!cir.ptr<!rec_Init>, !cir.bool)
 // AFTER-NEXT:   cir.func private @_ZN4InitD1Ev(!cir.ptr<!rec_Init>)
 // AFTER-NEXT:   cir.global "private" internal dsolocal @_ZL8__ioinit =  #cir.zero : !rec_Init {alignment = 1 : i64, ast = #cir.var.decl.ast}
@@ -67,7 +67,7 @@ static Init __ioinit2(false);
 // AFTER-NEXT:     %6 = cir.get_global @__dso_handle : !cir.ptr<i8>
 // AFTER-NEXT:     cir.call @__cxa_atexit(%4, %5, %6) : (!cir.ptr<!cir.func<(!cir.ptr<!void>)>>, !cir.ptr<!void>, !cir.ptr<i8>) -> ()
 // AFTER-NEXT:     cir.return
-// AFTER:        cir.func private @_GLOBAL__sub_I_static.cpp()
+// AFTER:        cir.func private hidden @_GLOBAL__sub_I_static.cpp()
 // AFTER-NEXT:     cir.call @__cxx_global_var_init() : () -> ()
 // AFTER-NEXT:     cir.call @__cxx_global_var_init.1() : () -> ()
 // AFTER-NEXT:     cir.return
@@ -84,7 +84,7 @@ static Init __ioinit2(false);
 // LLVM-NEXT:   call void @_ZN4InitC1Eb(ptr @_ZL9__ioinit2, i1 false)
 // LLVM-NEXT:   call void @__cxa_atexit(ptr @_ZN4InitD1Ev, ptr @_ZL9__ioinit2, ptr @__dso_handle)
 // LLVM-NEXT:   ret void
-// LLVM:      define void @_GLOBAL__sub_I_static.cpp()
+// LLVM:      define hidden void @_GLOBAL__sub_I_static.cpp()
 // LLVM-NEXT:  call void @__cxx_global_var_init()
 // LLVM-NEXT:  call void @__cxx_global_var_init.1()
 // LLVM-NEXT:  ret void

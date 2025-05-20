@@ -852,8 +852,12 @@ cir::GlobalOp CIRGenModule::createGlobalOp(CIRGenModule &cgm,
 
     // Default to private until we can judge based on the initializer,
     // since MLIR doesn't allow public declarations.
+    // TODO(cir #1029): Remove direct calls to setting MLIR visibility
     mlir::SymbolTable::setSymbolVisibility(
         g, mlir::SymbolTable::Visibility::Private);
+    cir::setGlobalVisibility(g, isLocalLinkage(linkage)
+                                   ? cir::VisibilityKind::Default
+                                   : cir::VisibilityKind::Hidden);
   }
   return g;
 }
@@ -1106,7 +1110,9 @@ CIRGenModule::getOrCreateCIRGlobal(StringRef mangledName, mlir::Type ty,
         auto lt = cir::GlobalLinkageKind::ExternalLinkage;
         entry.setLinkageAttr(
             cir::GlobalLinkageKindAttr::get(&getMLIRContext(), lt));
+        // TODO(cir #1029): Remove direct calls to setting MLIR visibility
         mlir::SymbolTable::setSymbolVisibility(entry, getMLIRVisibility(entry));
+        cir::setGlobalVisibility(entry, getCIRVisibility(entry));
       }
     }
 
@@ -1593,6 +1599,7 @@ void CIRGenModule::emitGlobalVarDefinition(const clang::VarDecl *d,
   gv.setLinkage(linkage);
   // FIXME(cir): setLinkage should likely set MLIR's visibility automatically.
   gv.setVisibility(getMLIRVisibilityFromCIRLinkage(linkage));
+  cir::setGlobalVisibility(gv, getCIRVisibilityFromCIRLinkage(linkage));
   // TODO(cir): handle DLL storage classes in CIR?
   if (d->hasAttr<DLLImportAttr>())
     assert(!cir::MissingFeatures::setDLLStorageClass());
@@ -2209,8 +2216,10 @@ void CIRGenModule::setInitializer(cir::GlobalOp &global,
                                   mlir::Attribute value) {
   // Recompute visibility when updating initializer.
   global.setInitialValueAttr(value);
+  // TODO(cir #1029): Remove direct calls to setting MLIR visibility
   mlir::SymbolTable::setSymbolVisibility(
       global, CIRGenModule::getMLIRVisibility(global));
+  cir::setGlobalVisibility(global, getCIRVisibility(global));
 }
 
 mlir::SymbolTable::Visibility
@@ -2220,6 +2229,10 @@ CIRGenModule::getMLIRVisibility(cir::GlobalOp op) {
   if (op.isDeclaration())
     return mlir::SymbolTable::Visibility::Private;
   return getMLIRVisibilityFromCIRLinkage(op.getLinkage());
+}
+
+cir::VisibilityKind CIRGenModule::getCIRVisibility(cir::GlobalOp op) {
+  return getCIRVisibilityFromCIRLinkage(op.getLinkage());
 }
 
 mlir::SymbolTable::Visibility
@@ -2236,6 +2249,28 @@ CIRGenModule::getMLIRVisibilityFromCIRLinkage(cir::GlobalLinkageKind glk) {
   case cir::GlobalLinkageKind::WeakAnyLinkage:
   case cir::GlobalLinkageKind::WeakODRLinkage:
     return mlir::SymbolTable::Visibility::Public;
+  default: {
+    llvm::errs() << "visibility not implemented for '"
+                 << stringifyGlobalLinkageKind(glk) << "'\n";
+    assert(0 && "not implemented");
+  }
+  }
+  llvm_unreachable("linkage should be handled above!");
+}
+
+cir::VisibilityKind
+CIRGenModule::getCIRVisibilityFromCIRLinkage(cir::GlobalLinkageKind glk) {
+  switch (glk) {
+  case cir::GlobalLinkageKind::InternalLinkage:
+  case cir::GlobalLinkageKind::PrivateLinkage:
+  case cir::GlobalLinkageKind::ExternalLinkage:
+  case cir::GlobalLinkageKind::ExternalWeakLinkage:
+  case cir::GlobalLinkageKind::LinkOnceODRLinkage:
+  case cir::GlobalLinkageKind::AvailableExternallyLinkage:
+  case cir::GlobalLinkageKind::CommonLinkage:
+  case cir::GlobalLinkageKind::WeakAnyLinkage:
+  case cir::GlobalLinkageKind::WeakODRLinkage:
+    return cir::VisibilityKind::Default;
   default: {
     llvm::errs() << "visibility not implemented for '"
                  << stringifyGlobalLinkageKind(glk) << "'\n";
@@ -2435,8 +2470,12 @@ void CIRGenModule::emitAliasForGlobal(StringRef mangledName,
   // Declarations cannot have public MLIR visibility, just mark them private
   // but this really should have no meaning since CIR should not be using
   // this information to derive linkage information.
+  // TODO(cir #1029): Remove direct calls to setting MLIR visibility
   mlir::SymbolTable::setSymbolVisibility(
       alias, mlir::SymbolTable::Visibility::Private);
+  cir::setGlobalVisibility(alias, isLocalLinkage(linkage)
+                                 ? cir::VisibilityKind::Default
+                                 : cir::VisibilityKind::Hidden);
 
   // Alias constructors and destructors are always unnamed_addr.
   assert(!cir::MissingFeatures::unnamedAddr());
@@ -2707,8 +2746,10 @@ cir::FuncOp CIRGenModule::createCIRFunction(mlir::Location loc, StringRef name,
     // as the default linkage.
     f.setLinkageAttr(cir::GlobalLinkageKindAttr::get(
         &getMLIRContext(), cir::GlobalLinkageKind::ExternalLinkage));
+    // TODO(cir #1029): Remove direct calls to setting MLIR visibility
     mlir::SymbolTable::setSymbolVisibility(
         f, mlir::SymbolTable::Visibility::Private);
+    cir::setGlobalVisibility(f, cir::VisibilityKind::Hidden);
 
     // Initialize with empty dict of extra attributes.
     f.setExtraAttrsAttr(
@@ -3968,8 +4009,10 @@ cir::GlobalOp CIRGenModule::createOrReplaceCXXRuntimeVariable(
   // Set up extra information and add to the module
   gv.setLinkageAttr(
       cir::GlobalLinkageKindAttr::get(&getMLIRContext(), linkage));
+  // TODO(cir #1029): Remove direct calls to setting MLIR visibility
   mlir::SymbolTable::setSymbolVisibility(gv,
                                          CIRGenModule::getMLIRVisibility(gv));
+  cir::setGlobalVisibility(gv, CIRGenModule::getCIRVisibility(gv));
 
   if (oldGv) {
     // Replace occurrences of the old variable if needed.

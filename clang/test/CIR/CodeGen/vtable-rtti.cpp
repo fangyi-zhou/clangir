@@ -84,7 +84,7 @@ public:
 // RTTI_DISABLED:   cir.global linkonce_odr @_ZTV1B = #cir.vtable<{#cir.const_array<[#cir.ptr<null> : !cir.ptr<!u8i>, #cir.ptr<null> : !cir.ptr<!u8i>, #cir.global_view<@_ZN1BD2Ev> : !cir.ptr<!u8i>, #cir.global_view<@_ZN1BD0Ev> : !cir.ptr<!u8i>, #cir.global_view<@_ZNK1A5quackEv> : !cir.ptr<!u8i>]> : !cir.array<!cir.ptr<!u8i> x 5>}> : ![[VTableTypeA]]
 
 // vtable for __cxxabiv1::__si_class_type_info
-// CHECK:   cir.global "private" external @_ZTVN10__cxxabiv120__si_class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
+// CHECK:   cir.global "private" hidden external @_ZTVN10__cxxabiv120__si_class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
 // RTTI_DISABLED-NOT:   cir.global "private" external @_ZTVN10__cxxabiv120__si_class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
 
 // typeinfo name for B
@@ -92,7 +92,7 @@ public:
 // RTTI_DISABLED-NOT: cir.global linkonce_odr @_ZTS1B
 
 // typeinfo for A
-// CHECK:   cir.global "private" constant external @_ZTI1A : !cir.ptr<!u8i>
+// CHECK:   cir.global "private" hidden constant external @_ZTI1A : !cir.ptr<!u8i>
 // RTTI_DISABLED-NOT:   cir.global "private" constant external @_ZTI1A : !cir.ptr<!u8i>
 
 // typeinfo for B

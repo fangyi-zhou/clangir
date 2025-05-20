@@ -16,7 +16,7 @@ A &&a = dynamic_cast<A&&>(A{});
 // CHECK-NEXT:   }
 // CHECK-NEXT:   cir.return
 // CHECK-NEXT: }
-// CHECK-NEXT: cir.func private @_GLOBAL__sub_I_tempref.cpp() {
+// CHECK-NEXT: cir.func private hidden @_GLOBAL__sub_I_tempref.cpp() {
 // CHECK-NEXT:   cir.call @__cxx_global_var_init() : () -> ()
 // CHECK-NEXT:   cir.return
 // CHECK-NEXT: }
@@ -36,7 +36,7 @@ A &&a = dynamic_cast<A&&>(A{});
 // LLVM-DAG:   ret void
 // LLVM-DAG: }
 
-// LLVM-DAG: define void @_GLOBAL__sub_I_tempref.cpp()
+// LLVM-DAG: define hidden void @_GLOBAL__sub_I_tempref.cpp()
 // LLVM-DAG:   call void @__cxx_global_var_init()
 // LLVM-DAG:   ret void
 // LLVM-DAG: }

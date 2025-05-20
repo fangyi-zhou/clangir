@@ -638,8 +638,10 @@ void CIRGenVTables::emitVTTDefinition(cir::GlobalOp VTT,
 
   // Set the correct linkage.
   VTT.setLinkage(Linkage);
+  // TODO(cir #1029): Remove direct calls to setting MLIR visibility
   mlir::SymbolTable::setSymbolVisibility(VTT,
                                          CIRGenModule::getMLIRVisibility(VTT));
+  cir::setGlobalVisibility(VTT, CIRGenModule::getCIRVisibility(VTT));
 
   if (CGM.supportsCOMDAT() && VTT.isWeakForLinker()) {
     assert(!cir::MissingFeatures::setComdat());

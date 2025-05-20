@@ -44,4 +44,10 @@ class BoolType;
 #define GET_ATTRDEF_CLASSES
 #include "clang/CIR/Dialect/IR/CIROpsAttributes.h.inc"
 
+namespace cir {
+template <typename T> void setGlobalVisibility(T Op, VisibilityKind V) {
+  Op.setGlobalVisibilityAttr(VisibilityAttr::get(Op.getContext(), V));
+}
+} // namespace cir
+
 #endif // MLIR_DIALECT_CIR_IR_CIRATTRS_H_

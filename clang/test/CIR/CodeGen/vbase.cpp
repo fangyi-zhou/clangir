@@ -20,12 +20,12 @@ void ppp() { B b; }
 // VTT for B.
 // CIR:  cir.global linkonce_odr @_ZTT1B = #cir.const_array<[#cir.global_view<@_ZTV1B, [0 : i32, 3 : i32]> : !cir.ptr<!u8i>]> : !cir.array<!cir.ptr<!u8i> x 1>
 
-// CIR:  cir.global "private" external @_ZTVN10__cxxabiv121__vmi_class_type_infoE
+// CIR:  cir.global "private" hidden external @_ZTVN10__cxxabiv121__vmi_class_type_infoE
 
 // Type info name for B
 // CIR:  cir.global linkonce_odr comdat @_ZTS1B = #cir.const_array<"1B" : !cir.array<!s8i x 2>> : !cir.array<!s8i x 2>
 
-// CIR:  cir.global "private" external @_ZTVN10__cxxabiv117__class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
+// CIR:  cir.global "private" hidden external @_ZTVN10__cxxabiv117__class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
 
 // Type info name for A
 // CIR:  cir.global linkonce_odr comdat @_ZTS1A = #cir.const_array<"1A" : !cir.array<!s8i x 2>> : !cir.array<!s8i x 2>
@@ -42,9 +42,9 @@ void ppp() { B b; }
 // Note: GEP emitted by cir might not be the same as LLVM, due to constant folding.
 // LLVM: @_ZTV1B = linkonce_odr global { [3 x ptr] } { [3 x ptr] [ptr inttoptr (i64 12 to ptr), ptr null, ptr @_ZTI1B] }
 // LLVM: @_ZTT1B = linkonce_odr global [1 x ptr] [ptr getelementptr inbounds nuw (i8, ptr @_ZTV1B, i64 24)]
-// LLVM: @_ZTVN10__cxxabiv121__vmi_class_type_infoE = external global ptr
+// LLVM: @_ZTVN10__cxxabiv121__vmi_class_type_infoE = external hidden global ptr
 // LLVM: @_ZTS1B = linkonce_odr global [2 x i8] c"1B", comdat
-// LLVM: @_ZTVN10__cxxabiv117__class_type_infoE = external global ptr
+// LLVM: @_ZTVN10__cxxabiv117__class_type_infoE = external hidden global ptr
 // LLVM: @_ZTS1A = linkonce_odr global [2 x i8] c"1A", comdat
 // LLVM: @_ZTI1A = constant { ptr, ptr } { ptr getelementptr inbounds nuw (i8, ptr @_ZTVN10__cxxabiv117__class_type_infoE, i64 16), ptr @_ZTS1A }
 // LLVM: @_ZTI1B = constant { ptr, ptr, i32, i32, ptr, i64 } { ptr getelementptr inbounds nuw (i8, ptr @_ZTVN10__cxxabiv121__vmi_class_type_infoE, i64 16), ptr @_ZTS1B, i32 0, i32 1, ptr @_ZTI1A, i64 -6141 }

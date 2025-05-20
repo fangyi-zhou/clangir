@@ -19,6 +19,7 @@
 #include "clang/CIR/Dialect/Builder/CIRBaseBuilder.h"
 #include "clang/CIR/Dialect/IR/CIRDataLayout.h"
 #include "clang/CIR/Dialect/IR/CIRDialect.h"
+#include "clang/CIR/Dialect/IR/CIROpsEnums.h"
 #include "clang/CIR/Dialect/Passes.h"
 #include "clang/CIR/Interfaces/ASTAttrInterfaces.h"
 #include "llvm/ADT/APFloat.h"
@@ -211,8 +212,12 @@ GlobalOp LoweringPreparePass::buildRuntimeVariable(
     g = builder.create<cir::GlobalOp>(loc, name, type);
     g.setLinkageAttr(
         cir::GlobalLinkageKindAttr::get(builder.getContext(), linkage));
+    // TODO(cir #1029): Remove direct calls to setting MLIR visibility
     mlir::SymbolTable::setSymbolVisibility(
         g, mlir::SymbolTable::Visibility::Private);
+    cir::setGlobalVisibility(g, isLocalLinkage(linkage)
+                                    ? cir::VisibilityKind::Default
+                                    : cir::VisibilityKind::Hidden);
   }
   return g;
 }
@@ -226,8 +231,12 @@ FuncOp LoweringPreparePass::buildRuntimeFunction(
     f = builder.create<cir::FuncOp>(loc, name, type);
     f.setLinkageAttr(
         cir::GlobalLinkageKindAttr::get(builder.getContext(), linkage));
+    // TODO(cir #1029): Remove direct calls to setting MLIR visibility
     mlir::SymbolTable::setSymbolVisibility(
         f, mlir::SymbolTable::Visibility::Private);
+    cir::setGlobalVisibility(f, isLocalLinkage(linkage)
+                                    ? cir::VisibilityKind::Default
+                                    : cir::VisibilityKind::Hidden);
     mlir::NamedAttrList attrs;
     f.setExtraAttrsAttr(cir::ExtraFuncAttributesAttr::get(
         attrs.getDictionary(builder.getContext())));

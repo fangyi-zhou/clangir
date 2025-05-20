@@ -87,8 +87,8 @@ int main() {
 // LLVM-DAG: @_ZTV6Mother = linkonce_odr global { [4 x ptr] } { [4 x ptr] [ptr null, ptr @_ZTI6Mother, ptr @_ZN6Mother9MotherFooEv, ptr @_ZN6Mother10MotherFoo2Ev] }
 
 //   vtable for __cxxabiv1::__class_type_info
-// CIR: cir.global "private" external @_ZTVN10__cxxabiv117__class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
-// LLVM-DAG: @_ZTVN10__cxxabiv117__class_type_infoE = external global ptr
+// CIR: cir.global "private" hidden external @_ZTVN10__cxxabiv117__class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
+// LLVM-DAG: @_ZTVN10__cxxabiv117__class_type_infoE = external hidden global ptr
 
 //   typeinfo name for Mother
 // CIR: cir.global linkonce_odr comdat @_ZTS6Mother = #cir.const_array<"6Mother" : !cir.array<!s8i x 7>> : !cir.array<!s8i x 7> {alignment = 1 : i64}
@@ -108,8 +108,8 @@ int main() {
 // LLVM-DAG: @_ZTV5Child = linkonce_odr global { [4 x ptr], [3 x ptr] } { [4 x ptr] [ptr null, ptr @_ZTI5Child, ptr @_ZN5Child9MotherFooEv, ptr @_ZN6Mother10MotherFoo2Ev], [3 x ptr] [ptr inttoptr (i64 -8 to ptr), ptr @_ZTI5Child, ptr @_ZN6Father9FatherFooEv] }
 
 //   vtable for __cxxabiv1::__vmi_class_type_info
-// CIR: cir.global "private" external @_ZTVN10__cxxabiv121__vmi_class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
-// LLVM-DAG: @_ZTVN10__cxxabiv121__vmi_class_type_infoE = external global ptr
+// CIR: cir.global "private" hidden external @_ZTVN10__cxxabiv121__vmi_class_type_infoE : !cir.ptr<!cir.ptr<!u8i>>
+// LLVM-DAG: @_ZTVN10__cxxabiv121__vmi_class_type_infoE = external hidden global ptr
 
 //   typeinfo name for Child
 // CIR: cir.global linkonce_odr comdat @_ZTS5Child = #cir.const_array<"5Child" : !cir.array<!s8i x 6>> : !cir.array<!s8i x 6> {alignment = 1 : i64}

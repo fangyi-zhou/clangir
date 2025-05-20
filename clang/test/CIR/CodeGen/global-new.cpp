@@ -75,7 +75,7 @@ e *g = new e(0);
 // LLVM: define internal void @__cxx_global_var_init.1()
 // LLVM:   call ptr @_Znwm(i64 1)
 
-// LLVM: define void @_GLOBAL__sub_I_global_new.cpp()
+// LLVM: define hidden void @_GLOBAL__sub_I_global_new.cpp()
 // LLVM:   call void @__cxx_global_var_init()
 // LLVM:   call void @__cxx_global_var_init.1()
 

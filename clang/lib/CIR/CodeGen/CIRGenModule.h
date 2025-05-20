@@ -811,9 +811,12 @@ public:
   static void setInitializer(cir::GlobalOp &op, mlir::Attribute value);
   static mlir::SymbolTable::Visibility
   getMLIRVisibilityFromCIRLinkage(cir::GlobalLinkageKind GLK);
+  static cir::VisibilityKind
+  getCIRVisibilityFromCIRLinkage(cir::GlobalLinkageKind GLK);
   static cir::VisibilityKind getGlobalVisibilityKindFromClangVisibility(
       clang::VisibilityAttr::VisibilityType visibility);
   cir::VisibilityAttr getGlobalVisibilityAttrFromDecl(const Decl *decl);
+  static cir::VisibilityKind getCIRVisibility(cir::GlobalOp op);
   static mlir::SymbolTable::Visibility getMLIRVisibility(cir::GlobalOp op);
   cir::GlobalLinkageKind getFunctionLinkage(GlobalDecl GD);
   cir::GlobalLinkageKind getCIRLinkageForDeclarator(const DeclaratorDecl *D,
@@ -822,8 +825,10 @@ public:
   void setFunctionLinkage(GlobalDecl GD, cir::FuncOp f) {
     auto L = getFunctionLinkage(GD);
     f.setLinkageAttr(cir::GlobalLinkageKindAttr::get(&getMLIRContext(), L));
+    // TODO(cir #1029): Remove direct calls to setting MLIR visibility
     mlir::SymbolTable::setSymbolVisibility(f,
                                            getMLIRVisibilityFromCIRLinkage(L));
+    cir::setGlobalVisibility(f, getCIRVisibilityFromCIRLinkage(L));
   }
 
   cir::GlobalLinkageKind getCIRLinkageVarDefinition(const VarDecl *VD,

@@ -14,11 +14,11 @@ void active (void)
 // LLVM: @y = weak_odr global
 // LLVM: @x = weak global
 
-// CIR:      cir.func extern_weak private @B()
+// CIR:      cir.func extern_weak private hidden @B()
 // CIR:      cir.func @active()
 // CIR-NEXT:   cir.call @B() : () -> ()
 
-// LLVM:     declare extern_weak void @B()
+// LLVM:     declare extern_weak hidden void @B()
 // LLVM:     define dso_local void @active()
 // LLVM-NEXT:  call void @B()
 
