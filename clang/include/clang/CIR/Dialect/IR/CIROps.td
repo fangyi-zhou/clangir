@@ -2429,7 +2429,7 @@ def GlobalOp : CIR_Op<"global",
     The backing memory for the variable is allocated statically and is
     described by the type of the variable.
 
-    The operation is a declaration if no `inital_value` is
+    The operation is a declaration if no `initial_value` is
     specified, else it is a definition.
 
     The global variable can also be marked constant using the
@@ -2496,22 +2496,21 @@ def GlobalOp : CIR_Op<"global",
   }];
 
   let skipDefaultBuilders = 1;
-  let builders = [
-    OpBuilder<(ins
+  let builders = [OpBuilder<(ins
       // MLIR's default visibility is public.
       "llvm::StringRef":$sym_name,
-      "mlir::Type":$sym_type,
-      CArg<"bool", "false">:$isConstant,
+      "mlir::Type":$sym_type, CArg<"bool", "false">:$isConstant,
       // CIR defaults to external linkage.
       CArg<"cir::GlobalLinkageKind",
-            "cir::GlobalLinkageKind::ExternalLinkage">:$linkage,
+           "cir::GlobalLinkageKind::ExternalLinkage">:$linkage,
+      // CIR's default visibility is Default.
+      CArg<"cir::VisibilityKind",
+           "cir::VisibilityKind::Default">:$global_visibility,
       CArg<"cir::AddressSpaceAttr", "{}">:$addrSpace,
       CArg<"llvm::function_ref<void(mlir::OpBuilder &, mlir::Location)>",
            "nullptr">:$ctorBuilder,
       CArg<"llvm::function_ref<void(mlir::OpBuilder &, mlir::Location)>",
-           "nullptr">:$dtorBuilder)
-    >
-  ];
+           "nullptr">:$dtorBuilder)>];
 
   let hasVerifier = 1;
 }

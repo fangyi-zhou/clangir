@@ -262,7 +262,8 @@ public:
       CIRGenModule &cgm, mlir::Location loc, llvm::StringRef name, mlir::Type t,
       bool isConstant = false, cir::AddressSpaceAttr addrSpace = {},
       mlir::Operation *insertPoint = nullptr,
-      cir::GlobalLinkageKind linkage = cir::GlobalLinkageKind::ExternalLinkage);
+      cir::GlobalLinkageKind linkage = cir::GlobalLinkageKind::ExternalLinkage,
+      cir::VisibilityKind visibility = cir::VisibilityKind::Default);
 
   // FIXME: Hardcoding priority here is gross.
   void AddGlobalCtor(cir::FuncOp Ctor, int Priority = 65535);

@@ -826,7 +826,8 @@ cir::GlobalOp CIRGenModule::createGlobalOp(CIRGenModule &cgm,
                                            mlir::Type t, bool isConstant,
                                            cir::AddressSpaceAttr addrSpace,
                                            mlir::Operation *insertPoint,
-                                           cir::GlobalLinkageKind linkage) {
+                                           cir::GlobalLinkageKind linkage,
+                                           cir::VisibilityKind visibility) {
   cir::GlobalOp g;
   auto &builder = cgm.getBuilder();
   {
@@ -841,7 +842,7 @@ cir::GlobalOp CIRGenModule::createGlobalOp(CIRGenModule &cgm,
       builder.setInsertionPoint(curCGF->CurFn);
 
     g = builder.create<cir::GlobalOp>(loc, name, t, isConstant, linkage,
-                                      addrSpace);
+                                      visibility, addrSpace);
     if (!curCGF) {
       if (insertPoint)
         cgm.getModule().insert(insertPoint, g);
@@ -851,6 +852,8 @@ cir::GlobalOp CIRGenModule::createGlobalOp(CIRGenModule &cgm,
 
     // Default to private until we can judge based on the initializer,
     // since MLIR doesn't allow public declarations.
+    // FIXME(cir): This should be deduced via linkage or CIR visibility (maybe
+    // the default CIR visibility should be hidden?)
     mlir::SymbolTable::setSymbolVisibility(
         g, mlir::SymbolTable::Visibility::Private);
   }
@@ -1222,7 +1225,7 @@ CIRGenModule::getOrCreateCIRGlobal(StringRef mangledName, mlir::Type ty,
     // Check if we a have a const declaration with an initializer, we maybe
     // able to emit it as available_externally to expose it's value to the
     // optimizer.
-    if (getLangOpts().CPlusPlus && gv.isPublic() &&
+    if (getLangOpts().CPlusPlus && !gv.hasHiddenVisibility() &&
         d->getType().isConstQualified() && gv.isDeclaration() &&
         !d->hasDefinition() && d->hasInit() && !d->hasAttr<DLLImportAttr>()) {
       assert(0 && "not implemented");
@@ -1581,7 +1584,7 @@ void CIRGenModule::emitGlobalVarDefinition(const clang::VarDecl *d,
   // Additionally, if the variable isn't plain external linkage, e.g. if it's
   // weak or linkonce, the de-duplication semantics are important to preserve,
   // so we don't change the linkage.
-  if (d->getTLSKind() == VarDecl::TLS_Dynamic && gv.isPublic() &&
+  if (d->getTLSKind() == VarDecl::TLS_Dynamic && !gv.hasHiddenVisibility() &&
       astContext.getTargetInfo().getTriple().isOSDarwin() &&
       !d->hasAttr<ConstInitAttr>()) {
     // TODO(cir): set to mlir::SymbolTable::Visibility::Private once we have

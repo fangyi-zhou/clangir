@@ -1064,7 +1064,6 @@ void LoweringPreparePass::buildCUDAModuleCtor() {
   fatbinStr.setInitialValueAttr(cir::ConstArrayAttr::get(
       fatbinType, builder.getStringAttr(cudaGPUBinary->getBuffer())));
   fatbinStr.setSection(fatbinConstName);
-  fatbinStr.setPrivate();
 
   // Create a record FatbinWrapper, pointing to the GPU binary.
   // Record layout:
@@ -1079,7 +1078,6 @@ void LoweringPreparePass::buildCUDAModuleCtor() {
   GlobalOp fatbinWrapper = builder.create<GlobalOp>(
       loc, fatbinWrapperName, fatbinWrapperType, /*isConstant=*/true,
       /*linkage=*/cir::GlobalLinkageKind::InternalLinkage);
-  fatbinWrapper.setPrivate();
   fatbinWrapper.setSection(fatbinSectionName);
 
   auto magicInit = IntAttr::get(intTy, fatMagic);
@@ -1100,7 +1098,6 @@ void LoweringPreparePass::buildCUDAModuleCtor() {
       loc, gpubinHandleName, voidPtrPtrTy,
       /*isConstant=*/false, /*linkage=*/GlobalLinkageKind::InternalLinkage);
   gpubinHandle.setInitialValueAttr(builder.getConstNullPtrAttr(voidPtrPtrTy));
-  gpubinHandle.setPrivate();
 
   // Declare this function:
   //    void **__{cuda|hip}RegisterFatBinary(void *);
@@ -1248,7 +1245,6 @@ void LoweringPreparePass::buildCUDARegisterGlobalFunctions(
     // We must make the string zero-terminated.
     tmpString.setInitialValueAttr(ConstArrayAttr::get(
         strType, StringAttr::get(&getContext(), str + "\0")));
-    tmpString.setPrivate();
     return tmpString;
   };
 

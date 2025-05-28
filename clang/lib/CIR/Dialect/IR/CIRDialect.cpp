@@ -2073,7 +2073,7 @@ LogicalResult cir::GlobalOp::verify() {
 void cir::GlobalOp::build(
     OpBuilder &odsBuilder, OperationState &odsState, llvm::StringRef sym_name,
     Type sym_type, bool isConstant, cir::GlobalLinkageKind linkage,
-    cir::AddressSpaceAttr addrSpace,
+    cir::VisibilityKind visibility, cir::AddressSpaceAttr addrSpace,
     function_ref<void(OpBuilder &, Location)> ctorBuilder,
     function_ref<void(OpBuilder &, Location)> dtorBuilder) {
   odsState.addAttribute(getSymNameAttrName(odsState.name),
@@ -2103,8 +2103,18 @@ void cir::GlobalOp::build(
     dtorBuilder(odsBuilder, odsState.location);
   }
 
-  odsState.addAttribute(getGlobalVisibilityAttrName(odsState.name),
-                        cir::VisibilityAttr::get(odsBuilder.getContext()));
+  odsState.addAttribute(
+      getGlobalVisibilityAttrName(odsState.name),
+      cir::VisibilityAttr::get(odsBuilder.getContext(), visibility));
+
+  // Set visibility based on linkage and visibility.
+  auto mlirVisibility = cir::deduceMLIRVisibility(linkage, visibility);
+  odsState.addAttribute(
+      getSymVisibilityAttrName(odsState.name),
+      StringAttr::get(odsBuilder.getContext(),
+                      mlirVisibility == mlir::SymbolTable::Visibility::Public
+                          ? "public"
+                          : "private"));
 }
 
 /// Given the region at `index`, or the parent operation if `index` is None,

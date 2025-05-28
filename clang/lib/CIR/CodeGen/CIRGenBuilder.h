@@ -756,20 +756,21 @@ public:
   [[nodiscard]] cir::GlobalOp
   createGlobal(mlir::ModuleOp module, mlir::Location loc, mlir::StringRef name,
                mlir::Type type, bool isConst, cir::GlobalLinkageKind linkage,
+               cir::VisibilityKind visibility,
                cir::AddressSpaceAttr addrSpace = {}) {
     mlir::OpBuilder::InsertionGuard guard(*this);
     setInsertionPointToStart(module.getBody());
-    return create<cir::GlobalOp>(loc, name, type, isConst, linkage, addrSpace);
+    return create<cir::GlobalOp>(loc, name, type, isConst, linkage, visibility,
+                                 addrSpace);
   }
 
   /// Creates a versioned global variable. If the symbol is already taken, an ID
   /// will be appended to the symbol. The returned global must always be queried
   /// for its name so it can be referenced correctly.
-  [[nodiscard]] cir::GlobalOp
-  createVersionedGlobal(mlir::ModuleOp module, mlir::Location loc,
-                        mlir::StringRef name, mlir::Type type, bool isConst,
-                        cir::GlobalLinkageKind linkage,
-                        cir::AddressSpaceAttr addrSpace = {}) {
+  [[nodiscard]] cir::GlobalOp createVersionedGlobal(
+      mlir::ModuleOp module, mlir::Location loc, mlir::StringRef name,
+      mlir::Type type, bool isConst, cir::GlobalLinkageKind linkage,
+      cir::VisibilityKind visibility, cir::AddressSpaceAttr addrSpace = {}) {
     // Create a unique name if the given name is already taken.
     std::string uniqueName;
     if (unsigned version = GlobalsVersioning[name.str()]++)
@@ -778,7 +779,7 @@ public:
       uniqueName = name.str();
 
     return createGlobal(module, loc, uniqueName, type, isConst, linkage,
-                        addrSpace);
+                        visibility, addrSpace);
   }
 
   mlir::Value createGetBitfield(mlir::Location loc, mlir::Type resultType,
